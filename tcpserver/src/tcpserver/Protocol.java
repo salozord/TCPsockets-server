@@ -5,6 +5,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.security.MessageDigest;
@@ -24,25 +26,30 @@ public class Protocol {
 
 	public Protocol() {
 	}
-	public static void procesar(BufferedReader leerDelCliente , OutputStream escribirleAlCliente) {
+	public static void procesar(InputStream leerDelCliente , OutputStream escribirleAlCliente) {
 
 
 		String preparado;
 		try {
-			preparado = leerDelCliente.readLine();
+			BufferedReader bf = new BufferedReader(new InputStreamReader(leerDelCliente));
+			preparado = bf.readLine();
 			String archivosDisponibles = "";
-			if(preparado.equalsIgnoreCase(PREPARADO)) {
-				for ( File f: folder.listFiles()) {
+			if(preparado.equalsIgnoreCase(PREPARADO)) 
+			{
+				for ( File f: folder.listFiles()) 
+				{
 					archivosDisponibles += SEPARADOR;
 					archivosDisponibles += f.getName();
 				}
 				escribirleAlCliente.write(archivosDisponibles.getBytes());
-				String archivoSeleccionado = leerDelCliente.readLine();
+				String archivoSeleccionado = bf.readLine();
 				String[] a = archivoSeleccionado.split(",");
 				if(a.length == 1 ) {
 					File archivoDeseado = null;
-					if(archivosDisponibles.contains(archivoSeleccionado)) {
-						for(File f: folder.listFiles()) {
+					if(archivosDisponibles.contains(archivoSeleccionado)) 
+					{
+						for(File f: folder.listFiles()) 
+						{
 							if(f.getName().equalsIgnoreCase(a[0].replace(SEPARADOR, ""))) {
 								archivoDeseado = f;
 								break;
@@ -58,7 +65,8 @@ public class Protocol {
 
 							//enviando archivo por trozos
 							int bytesRead;
-							while ((bytesRead = bis.read(mybytearray)) > 0) {
+							while ((bytesRead = bis.read(mybytearray)) > 0) 
+							{
 								escribirleAlCliente.write(mybytearray,0, bytesRead);
 							}
 							escribirleAlCliente.write(FINARCH.getBytes());
@@ -69,8 +77,8 @@ public class Protocol {
 							byte[] fileHashed = hash.digest();
 							escribirleAlCliente.write(fileHashed);
 							
-							if(leerDelCliente.readLine().equalsIgnoreCase(RECIBIDO)) {
-								leerDelCliente.close(); 
+							if(bf.readLine().equalsIgnoreCase(RECIBIDO)) {
+								bf.close(); 
 							}
 							else {
 								escribirleAlCliente.write(ERROR.getBytes());

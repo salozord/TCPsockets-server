@@ -1,13 +1,19 @@
 package tcpserver;
 
+import java.net.Socket;
+
+import javax.xml.ws.handler.MessageContext.Scope;
+
 public class Task implements Runnable{
 	
 	private static final Double MAX_TIME=20000.0;
 	
+	private Socket sc;
 	private String clientId;
 	
-	public Task(String clientId) {
+	public Task(String clientId, Socket socketCliente) {
 		this.clientId = clientId;
+		this.sc = socketCliente;
 		
 	}
 	public String getClientId() {
@@ -15,9 +21,6 @@ public class Task implements Runnable{
 	}
 	
 	public void realizarTarea() {
-		while(true) {
-			
-		}
 	}
 	
 	
@@ -25,8 +28,9 @@ public class Task implements Runnable{
 	public void run() {
 		
 		try {
-			realizarTarea();
-			System.out.println("Executing" + clientId);
+			System.out.println("Executing " + clientId);
+			Protocol.procesar(sc.getInputStream(), sc.getOutputStream());
+			
 		}
 		catch(Exception e)
 		{
