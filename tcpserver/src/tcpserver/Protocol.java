@@ -9,12 +9,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-public class Protocol {
+public class Protocol extends Thread{
 
 	public static final String PREPARADO = "PREPARADO";
-	public static File folder  = new File("../files/");
+	public static File folder  = new File("../../data/");
 	public static final String SEPARADOR = "$";
 	public static final Integer TAMANIO_SEGMENTO = 1024;
 	public static final String ERROR = "ERROR";
@@ -22,10 +23,62 @@ public class Protocol {
 	public static final String FINARCH = "FINARCH";
 	public static final String RECIBIDO = "RECIBIDO";
 
-
-
-	public Protocol() {
+	private Socket sc;
+	private boolean aceptaArchs;
+	private int tiempoMuerte;
+	private File archivo;
+	private PoolThreads pool;
+	
+	public Protocol(Socket sc, boolean aceptaArchs, int tiempoMuerte, File archivo, PoolThreads pool) {
+		this.sc = sc;
+		this.aceptaArchs = aceptaArchs;
+		this.tiempoMuerte = tiempoMuerte;
+		this.archivo = archivo;
+		this.pool = pool;
 	}
+
+	public void run()
+	{
+		try 
+		{
+			sc.setSoTimeout(1000*tiempoMuerte);
+			while(true)
+			{
+				if(aceptaArchs == true)
+				{
+					procesar(sc.getInputStream(), sc.getOutputStream());
+					break;
+				}
+				else
+				{
+					//Duerme 5 segundos antes de validar si ya puede descargar el archivo
+					Thread.sleep(5000);
+					pool.seAceptan(aceptaArchs);
+				}
+			}
+		} 
+		catch (Exception e) 
+		{
+			// TODO: handle exception
+		}
+		finally
+		{
+			try 
+			{
+				if(aceptaArchs == true){
+					pool.finSesionArchivos();
+				}
+				pool.finSesion();
+				pool.notify();
+				sc.close();
+			} 
+			catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public static void procesar(InputStream leerDelCliente , OutputStream escribirleAlCliente) {
 
 
