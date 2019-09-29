@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -26,14 +25,14 @@ public class Protocol extends Thread{
 	private Socket sc;
 	private boolean aceptaArchs;
 	private int tiempoMuerte;
-	private File archivo;
+	private static File archivo;
 	private PoolThreads pool;
-	
+
 	public Protocol(Socket sc, boolean aceptaArchs, int tiempoMuerte, File archivo, PoolThreads pool) {
 		this.sc = sc;
 		this.aceptaArchs = aceptaArchs;
 		this.tiempoMuerte = tiempoMuerte;
-		this.archivo = archivo;
+		Protocol.archivo = archivo;
 		this.pool = pool;
 	}
 
@@ -78,76 +77,82 @@ public class Protocol extends Thread{
 			}
 		}
 	}
-	
+	/**
+	 * 
+	 * @param leerDelCliente
+	 * @param escribirleAlCliente
+	 */
 	public static void procesar(InputStream leerDelCliente , OutputStream escribirleAlCliente) {
 
 
 		String preparado;
-		try {
+		try 
+		{
 			BufferedReader bf = new BufferedReader(new InputStreamReader(leerDelCliente));
 			preparado = bf.readLine();
-			String archivosDisponibles = "";
 			if(preparado.equalsIgnoreCase(PREPARADO)) 
 			{
-				for ( File f: folder.listFiles()) 
+				//				for ( File f: folder.listFiles()) 
+				//				{
+				//					archivosDisponibles += SEPARADOR;
+				//					archivosDisponibles += f.getName();
+				//				}
+				//				escribirleAlCliente.write(archivosDisponibles.getBytes());
+				//				String archivoSeleccionado = bf.readLine();
+				//				String[] a = archivoSeleccionado.split(",");
+				//				if(a.length == 1 ) {
+				//					File archivoDeseado = null;
+				//					if(archivosDisponibles.contains(archivoSeleccionado)) 
+				//					{
+				//						for(File f: folder.listFiles()) 
+				//						{
+				//							if(f.getName().equalsIgnoreCase(a[0].replace(SEPARADOR, "")))
+				//							{
+				//								archivoDeseado = f;
+				//								break;
+				//							}
+				//						}
+				File archivoDeseado = Protocol.archivo;
+				if(archivoDeseado != null) 
 				{
-					archivosDisponibles += SEPARADOR;
-					archivosDisponibles += f.getName();
-				}
-				escribirleAlCliente.write(archivosDisponibles.getBytes());
-				String archivoSeleccionado = bf.readLine();
-				String[] a = archivoSeleccionado.split(",");
-				if(a.length == 1 ) {
-					File archivoDeseado = null;
-					if(archivosDisponibles.contains(archivoSeleccionado)) 
+					//avisamos el nombre del archivo se mandara 
+					escribirleAlCliente.write(archivoDeseado.getName().getBytes());
+
+					byte[] mybytearray = new byte[TAMANIO_SEGMENTO];
+					BufferedInputStream bis = new BufferedInputStream(new FileInputStream(archivoDeseado));
+
+					//enviando archivo por trozos
+					int bytesRead;
+					while ((bytesRead = bis.read(mybytearray)) > 0) 
 					{
-						for(File f: folder.listFiles()) 
-						{
-							if(f.getName().equalsIgnoreCase(a[0].replace(SEPARADOR, ""))) {
-								archivoDeseado = f;
-								break;
-							}
-						}
-						if(archivoDeseado != null) 
-						{
-							//avisamos que el archivo se mandara 
-							escribirleAlCliente.write(ARCH.getBytes());
-							
-							byte[] mybytearray = new byte[TAMANIO_SEGMENTO];
-							BufferedInputStream bis = new BufferedInputStream(new FileInputStream(archivoDeseado));
+						escribirleAlCliente.write(mybytearray,0, bytesRead);
+					}
+					escribirleAlCliente.write(FINARCH.getBytes());
 
-							//enviando archivo por trozos
-							int bytesRead;
-							while ((bytesRead = bis.read(mybytearray)) > 0) 
-							{
-								escribirleAlCliente.write(mybytearray,0, bytesRead);
-							}
-							escribirleAlCliente.write(FINARCH.getBytes());
-							
-							//hashing
-							MessageDigest hash = MessageDigest.getInstance("SHA-256");
-							hash.update(mybytearray);
-							byte[] fileHashed = hash.digest();
-							escribirleAlCliente.write(fileHashed);
-							
-							if(bf.readLine().equalsIgnoreCase(RECIBIDO)) {
-								bf.close(); 
-							}
-							else {
-								escribirleAlCliente.write(ERROR.getBytes());
-							}
-						}
-						else {
-							escribirleAlCliente.write(ERROR.getBytes());
-						}
+					//hashing
+					MessageDigest hash = MessageDigest.getInstance("SHA-256");
+					hash.update(mybytearray);
+					byte[] fileHashed = hash.digest();
+					escribirleAlCliente.write(fileHashed);
 
+					if(bf.readLine().equalsIgnoreCase(RECIBIDO)) {
+						bf.close(); 
+					}
+					else {
+						escribirleAlCliente.write(ERROR.getBytes());
 					}
 				}
 				else {
-					//esperar n clientes
+					escribirleAlCliente.write(ERROR.getBytes());
 				}
+
 			}
-		} catch (IOException e) {
+			else {
+				escribirleAlCliente.write(ERROR.getBytes());
+				//esperar n clientes
+			}
+		}
+		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
