@@ -17,7 +17,7 @@ public class PoolThreads
 
 	public String listarArchivos()
 	{
-		File directorio = new File("../../data");
+		File directorio = new File("./data");
 		String retorno = "";
 		String[] nombres = directorio.list();
 		for(int i = 0; i < nombres.length; i++)
@@ -35,11 +35,12 @@ public class PoolThreads
 	public void seleccion(BufferedReader br) throws IOException
 	{
 		while(true){
-			System.out.println("Digite el número de un archivo");
+			System.out.println("Digite el nÃºmero de un archivo");
 			System.out.println(listarArchivos());
-			File directorio = new File("../../data");
+			File directorio = new File("./data");
+			System.out.println(directorio.listFiles().length);
 			int arch = Integer.parseInt(br.readLine());
-			if(arch < 1 || arch >= directorio.listFiles().length)
+			if(arch < 1 || arch > directorio.listFiles().length)
 			{
 				System.out.println("Archivo incorrecto");
 				continue;
@@ -49,7 +50,7 @@ public class PoolThreads
 		}
 		while(true)
 		{
-			System.out.println("Ingrese el número de clientes concurrentes a los que se les enviará el archivo");
+			System.out.println("Ingrese el nÃºmero de clientes concurrentes a los que se les enviarÃ¡ el archivo");
 			int num = Integer.parseInt(br.readLine());
 			if(num < 0 || num > 25)
 			{
@@ -61,11 +62,11 @@ public class PoolThreads
 		}
 		while(true)
 		{
-			System.out.println("Ingrese el número de timeout de las peticiones del cliente en segundos, MAX 10 SEGUNDOS");
+			System.out.println("Ingrese el nÃºmero de timeout de las peticiones del cliente en segundos, MAX 10 SEGUNDOS");
 			int muerte = Integer.parseInt(br.readLine());
 			if(muerte < 0 || muerte > 10)
 			{
-				System.err.println("Ingrese un tiempo válido");
+				System.err.println("Ingrese un tiempo vÃ¡lido");
 				continue;
 			}
 			tiempoMuerte = muerte;
