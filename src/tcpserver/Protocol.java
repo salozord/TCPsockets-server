@@ -111,8 +111,8 @@ public class Protocol implements Runnable{
 					ld = LocalTime.now();
 					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ARCH " + archivoDeseado.getName() + NEW_LINE );
 					header += archivoDeseado.getName();
-					String headerHex = DatatypeConverter.printHexBinary(header.getBytes());
-					pw.println(headerHex);
+					//String headerHex = DatatypeConverter.printHexBinary(header.getBytes());
+					pw.println(header);
 
 					byte[] mybytearray = new byte[TAMANIO_SEGMENTO];
 					BufferedInputStream bis = new BufferedInputStream(new FileInputStream(archivoDeseado));
@@ -133,9 +133,9 @@ public class Protocol implements Runnable{
 					MessageDigest hash = MessageDigest.getInstance("SHA-256");
 					hash.update(bytesEnteros);
 					byte[] fileHashed = hash.digest();
-					byte[] finA = (FINARCH + SEPARADOR).getBytes();
+					//byte[] finA = (FINARCH + SEPARADOR).getBytes();
 					
-					String fin = DatatypeConverter.printHexBinary(finA)+ DatatypeConverter.printHexBinary(fileHashed);
+					String fin = (FINARCH + SEPARADOR)+ DatatypeConverter.printHexBinary(fileHashed);
 //					byte[] finArch = (FINARCH + SEPARADOR).getBytes() ;
 
 //
