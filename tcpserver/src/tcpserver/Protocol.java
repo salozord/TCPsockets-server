@@ -111,7 +111,7 @@ public class Protocol extends Thread{
 					String header =  "NOMBRE" + SEPARADOR;
 					ld = LocalDate.now();
 					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ARCH " + archivoDeseado.getName() );
-					header += archivoDeseado.getName().getBytes();
+					header += archivoDeseado.getName();
 					String headerHex = DatatypeConverter.printHexBinary(header.getBytes());
 					pw.write(headerHex);
 
@@ -119,9 +119,7 @@ public class Protocol extends Thread{
 					BufferedInputStream bis = new BufferedInputStream(new FileInputStream(archivoDeseado));
 					byte[] bytesEnteros = new byte[(int)archivoDeseado.length()];
 					bis.read(bytesEnteros);
-					//enviando archivo por trozos
-					int bytesRead;
-					while ((bytesRead = bis.read(mybytearray)) > 0) 
+					while ((bis.read(mybytearray)) > 0) 
 					{
 						//escribirleAlCliente.write(mybytearray,0, bytesRead);
 						String hexy = DatatypeConverter.printHexBinary(mybytearray);
