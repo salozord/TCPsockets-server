@@ -46,7 +46,6 @@ public class PoolThreads
 				continue;
 			}
 			archivo = directorio.listFiles()[arch-1];
-			System.out.println(archivo);
 			break;
 		}
 		while(true)
@@ -102,18 +101,8 @@ public class PoolThreads
 					numeroSesiones++;
 					boolean aceptaArchs = false;
 					seAceptan(aceptaArchs);
-					PoolThreads yo = this;
-					executor.execute(new Protocol(sc, aceptaArchs, tiempoMuerte, archivo, yo)
-//						new Runnable() {
-//
-//						@Override
-//						public void run() {
-//							
-//							Protocol d = new Protocol(sc, aceptaArchs, tiempoMuerte, archivo, yo);
-//							d.start();
-//						}
-//					}
-					);
+					Protocol p = new Protocol(sc, aceptaArchs, tiempoMuerte, archivo, this);
+					executor.execute(p);
 				}
 				else
 				{

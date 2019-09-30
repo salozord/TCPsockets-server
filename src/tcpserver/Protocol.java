@@ -66,6 +66,7 @@ public class Protocol implements Runnable{
 		catch (Exception e) 
 		{
 			// TODO: handle exception
+			e.printStackTrace();
 		}
 		finally
 		{
@@ -98,6 +99,7 @@ public class Protocol implements Runnable{
 		{
 			BufferedReader bf = new BufferedReader(new InputStreamReader(leerDelCliente));
 			PrintWriter pw = new PrintWriter(new OutputStreamWriter(escribirleAlCliente));
+			System.out.println("Antecitos");
 			preparado = bf.readLine();
 			if(preparado.equalsIgnoreCase(PREPARADO)) 
 			{
