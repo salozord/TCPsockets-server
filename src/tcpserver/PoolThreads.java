@@ -116,7 +116,7 @@ public class PoolThreads
 		}
 	}
 	
-	public void seAceptan(boolean aceptan)
+	public boolean seAceptan(boolean aceptan)
 	{
 		synchronized (nThreadsActivos) 
 		{
@@ -140,6 +140,7 @@ public class PoolThreads
 						aceptan = false;
 					}
 				}
+				return aceptan;
 			}
 		}
 	}

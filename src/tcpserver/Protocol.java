@@ -52,6 +52,7 @@ public class Protocol implements Runnable{
 			{
 				if(aceptaArchs == true)
 				{
+					
 					procesar(sc.getInputStream(), sc.getOutputStream(), sc.hashCode());
 					break;
 				}
@@ -59,7 +60,7 @@ public class Protocol implements Runnable{
 				{
 					//Duerme 5 segundos antes de validar si ya puede descargar el archivo
 					Thread.sleep(5000);
-					pool.seAceptan(aceptaArchs);
+					aceptaArchs = pool.seAceptan(aceptaArchs);
 				}
 			}
 		} 
