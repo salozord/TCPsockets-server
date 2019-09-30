@@ -38,7 +38,7 @@ public class PoolThreads
 			System.out.println("Digite el numero de un archivo");
 			System.out.println(listarArchivos());
 			File directorio = new File("./data");
-			System.out.println(directorio.listFiles().length);
+			// System.out.println(directorio.listFiles().length);
 			int arch = Integer.parseInt(br.readLine());
 			if(arch < 1 || arch > directorio.listFiles().length)
 			{
