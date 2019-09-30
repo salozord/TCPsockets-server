@@ -120,26 +120,28 @@ public class Protocol implements Runnable{
 					BufferedInputStream bis2 = new BufferedInputStream(new FileInputStream(archivoDeseado));
 					DataOutputStream dos =  new DataOutputStream(escribirleAlCliente);
 					
-					
-					
 					byte[] bytesEnteros = new byte[(int)archivoDeseado.length()];
-					int n ;
 					bis2.read(bytesEnteros, 0, (int)archivoDeseado.length());
-					while (( n = bis.read(mybytearray)) != 1) 
+					
+					dos.writeLong(archivoDeseado.length());
+					int n ;
+					long sumaTam = 0;
+					while (sumaTam < archivoDeseado.length() && ( n = bis.read(mybytearray)) != 1) 
 					{
-						try
-						{
-							dos.write(mybytearray,0, n);
-							dos.flush();
-						}
-						catch(Exception e) {
-							break;
-						}
+//						try
+//						{
+						dos.write(mybytearray,0, n);
+						sumaTam += n;	
+//							dos.flush();
+//						}
+//						catch(Exception e) {
+//							break;
+//						}
 						//String hexy = DatatypeConverter.printHexBinary(mybytearray);
 						//pw.println(hexy);
 						//n++;
 					}
-					dos.close();
+					//dos.close();
 					bis.close();
 					ld = LocalTime.now();
 					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ENVIADO ARCH " + archivoDeseado.getName() + NEW_LINE);
