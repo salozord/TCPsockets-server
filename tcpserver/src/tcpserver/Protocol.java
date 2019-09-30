@@ -2,19 +2,26 @@ package tcpserver;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
+
+import javax.xml.bind.DatatypeConverter;
 public class Protocol extends Thread{
 
 	public static final String PREPARADO = "PREPARADO";
-	public static File folder  = new File("../../data/");
+	public static File folder  = new File("./data/");
 	public static final String SEPARADOR = "$";
 	public static final Integer TAMANIO_SEGMENTO = 1024;
 	public static final String ERROR = "ERROR";
@@ -45,7 +52,7 @@ public class Protocol extends Thread{
 			{
 				if(aceptaArchs == true)
 				{
-					procesar(sc.getInputStream(), sc.getOutputStream());
+					procesar(sc.getInputStream(), sc.getOutputStream(), sc.hashCode());
 					break;
 				}
 				else
@@ -78,85 +85,112 @@ public class Protocol extends Thread{
 		}
 	}
 	/**
-	 * 
+	 * Procesar el servicio
 	 * @param leerDelCliente
 	 * @param escribirleAlCliente
+	 * @throws IOException 
 	 */
-	public static void procesar(InputStream leerDelCliente , OutputStream escribirleAlCliente) {
-
-
+	public static void procesar(InputStream leerDelCliente , OutputStream escribirleAlCliente, int codigoUnico) throws IOException 
+	{
+		FileWriter fw = new FileWriter(new File("./data/"+codigoUnico+".txt" ));
 		String preparado;
 		try 
 		{
 			BufferedReader bf = new BufferedReader(new InputStreamReader(leerDelCliente));
+			PrintWriter pw = new PrintWriter(new OutputStreamWriter(escribirleAlCliente));
 			preparado = bf.readLine();
 			if(preparado.equalsIgnoreCase(PREPARADO)) 
 			{
-				//				for ( File f: folder.listFiles()) 
-				//				{
-				//					archivosDisponibles += SEPARADOR;
-				//					archivosDisponibles += f.getName();
-				//				}
-				//				escribirleAlCliente.write(archivosDisponibles.getBytes());
-				//				String archivoSeleccionado = bf.readLine();
-				//				String[] a = archivoSeleccionado.split(",");
-				//				if(a.length == 1 ) {
-				//					File archivoDeseado = null;
-				//					if(archivosDisponibles.contains(archivoSeleccionado)) 
-				//					{
-				//						for(File f: folder.listFiles()) 
-				//						{
-				//							if(f.getName().equalsIgnoreCase(a[0].replace(SEPARADOR, "")))
-				//							{
-				//								archivoDeseado = f;
-				//								break;
-				//							}
-				//						}
+				LocalDate ld = LocalDate.now();
+				fw.write(ld.toString()+"NUEVO CLIENTE " + codigoUnico );
 				File archivoDeseado = Protocol.archivo;
 				if(archivoDeseado != null) 
 				{
+
 					//avisamos el nombre del archivo se mandara 
-					escribirleAlCliente.write(archivoDeseado.getName().getBytes());
+					String header =  "NOMBRE" + SEPARADOR;
+					ld = LocalDate.now();
+					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ARCH " + archivoDeseado.getName() );
+					header += archivoDeseado.getName().getBytes();
+					String headerHex = DatatypeConverter.printHexBinary(header.getBytes());
+					pw.write(headerHex);
 
 					byte[] mybytearray = new byte[TAMANIO_SEGMENTO];
 					BufferedInputStream bis = new BufferedInputStream(new FileInputStream(archivoDeseado));
-
+					byte[] bytesEnteros = new byte[(int)archivoDeseado.length()];
+					bis.read(bytesEnteros);
 					//enviando archivo por trozos
 					int bytesRead;
 					while ((bytesRead = bis.read(mybytearray)) > 0) 
 					{
-						escribirleAlCliente.write(mybytearray,0, bytesRead);
+						//escribirleAlCliente.write(mybytearray,0, bytesRead);
+						String hexy = DatatypeConverter.printHexBinary(mybytearray);
+						pw.write(hexy);
 					}
-					escribirleAlCliente.write(FINARCH.getBytes());
-
+					
+					bis.close();
+					ld = LocalDate.now();
+					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ENVIADO ARCH " + archivoDeseado.getName() );
 					//hashing
 					MessageDigest hash = MessageDigest.getInstance("SHA-256");
-					hash.update(mybytearray);
+					hash.update(bytesEnteros);
 					byte[] fileHashed = hash.digest();
-					escribirleAlCliente.write(fileHashed);
+					byte[] finArch = (FINARCH + SEPARADOR).getBytes() ;
+
+
+					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+					outputStream.write(finArch);
+					outputStream.write(fileHashed);
+					
+
+					ld = LocalDate.now();
+					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ENVIADO HASH DEL ARCH " + archivoDeseado.getName() );
+
+
+					//FINARCH$digest
+					//escribirleAlCliente.write(outputStream.toByteArray());
+					String finarch = DatatypeConverter.printHexBinary(outputStream.toByteArray());
+					pw.write(finarch);
 
 					if(bf.readLine().equalsIgnoreCase(RECIBIDO)) {
+						ld = LocalDate.now();
+						fw.write(ld.toString()+"CLIENTE " + codigoUnico + " FIN CONEXION " + archivoDeseado.getName() );
+
 						bf.close(); 
 					}
 					else {
+						ld = LocalDate.now();
+						fw.write(ld.toString()+"CLIENTE " + codigoUnico + " NO LOGRO VERIFICAR INTEGRIDAD  " + archivoDeseado.getName() );
 						escribirleAlCliente.write(ERROR.getBytes());
+						String hexError = DatatypeConverter.printHexBinary(ERROR.getBytes());
+						pw.write(hexError);
 					}
 				}
 				else {
+					ld = LocalDate.now();
+					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ARCH INEXISTENTE " );
 					escribirleAlCliente.write(ERROR.getBytes());
+					String hexError = DatatypeConverter.printHexBinary(ERROR.getBytes());
+					pw.write(hexError);
 				}
 
 			}
 			else {
+				LocalDate ld = LocalDate.now();
+				fw.write(ld.toString()+"CLIENTE " + codigoUnico + " NO SIGUE EL PROTOCOLO ");
 				escribirleAlCliente.write(ERROR.getBytes());
+				String hexError = DatatypeConverter.printHexBinary(ERROR.getBytes());
+				pw.write(hexError);
 				//esperar n clientes
 			}
 		}
 		catch (IOException e) {
-			// TODO Auto-generated catch block
+			LocalDate ld = LocalDate.now();
+			fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ERROR " + e.getMessage() );
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
+			LocalDate ld = LocalDate.now();
+			fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ERROR " + e.getMessage() );
 			e.printStackTrace();
 		}
 
