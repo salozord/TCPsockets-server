@@ -46,6 +46,7 @@ public class PoolThreads
 				continue;
 			}
 			archivo = directorio.listFiles()[arch-1];
+			System.out.println(archivo);
 			break;
 		}
 		while(true)
@@ -102,15 +103,17 @@ public class PoolThreads
 					boolean aceptaArchs = false;
 					seAceptan(aceptaArchs);
 					PoolThreads yo = this;
-					executor.execute(new Runnable() {
-
-						@Override
-						public void run() {
-							
-							Protocol d = new Protocol(sc, aceptaArchs, tiempoMuerte, archivo, yo);
-							d.start();
-						}
-					});
+					executor.execute(new Protocol(sc, aceptaArchs, tiempoMuerte, archivo, yo)
+//						new Runnable() {
+//
+//						@Override
+//						public void run() {
+//							
+//							Protocol d = new Protocol(sc, aceptaArchs, tiempoMuerte, archivo, yo);
+//							d.start();
+//						}
+//					}
+					);
 				}
 				else
 				{
@@ -179,8 +182,13 @@ public class PoolThreads
 		}
 	}
 
-	public static void main(String ... args) throws Exception{
-		PoolThreads pool = new PoolThreads();
-		pool.servidor();
+	public static void main(String ... args){
+		try {
+			PoolThreads pool = new PoolThreads();
+			pool.servidor();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

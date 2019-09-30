@@ -18,7 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 
 import javax.xml.bind.DatatypeConverter;
-public class Protocol extends Thread{
+public class Protocol implements Runnable{
 
 	public static final String PREPARADO = "PREPARADO";
 	public static File folder  = new File("./data/");
