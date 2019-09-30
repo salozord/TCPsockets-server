@@ -93,12 +93,12 @@ public class Protocol implements Runnable{
 	 */
 	public static void procesar(InputStream leerDelCliente , OutputStream escribirleAlCliente, int codigoUnico) throws IOException 
 	{
-		FileWriter fw = new FileWriter(new File("./data/"+codigoUnico+".txt" ));
+		FileWriter fw = new FileWriter(new File("./data/"+codigoUnico+".log" ));
 		String preparado;
 		try 
 		{
 			BufferedReader bf = new BufferedReader(new InputStreamReader(leerDelCliente));
-			PrintWriter pw = new PrintWriter(new OutputStreamWriter(escribirleAlCliente));
+			PrintWriter pw = new PrintWriter(new OutputStreamWriter(escribirleAlCliente), true);
 			System.out.println("Antecitos");
 			preparado = bf.readLine();
 			if(preparado.equalsIgnoreCase(PREPARADO)) 

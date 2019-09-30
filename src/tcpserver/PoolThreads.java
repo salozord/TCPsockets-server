@@ -116,7 +116,7 @@ public class PoolThreads
 		}
 	}
 	
-	public void seAceptan(boolean aceptaArchs)
+	public void seAceptan(boolean aceptan)
 	{
 		synchronized (nThreadsActivos) 
 		{
@@ -126,18 +126,18 @@ public class PoolThreads
 				{
 					iniciaConcurrencia = true;
 					nThreadsActivos++;
-					aceptaArchs = true;
+					aceptan = true;
 				}
 				else
 				{
 					if(nThreadsActivos < nThreads)
 					{
-						aceptaArchs = true;
+						aceptan = true;
 						nThreadsActivos++;
 					}
 					else
 					{
-						aceptaArchs = false;
+						aceptan = false;
 					}
 				}
 			}
