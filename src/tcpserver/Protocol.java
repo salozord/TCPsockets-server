@@ -162,27 +162,29 @@ public class Protocol implements Runnable{
 					else {
 						ld = LocalTime.now();
 						fw.write(ld.toString()+"CLIENTE " + codigoUnico + " NO LOGRO VERIFICAR INTEGRIDAD  " + archivoDeseado.getName() + NEW_LINE);
-						escribirleAlCliente.write(ERROR.getBytes());
-						String hexError = DatatypeConverter.printHexBinary(ERROR.getBytes());
-						pw.println(hexError);
+						//escribirleAlCliente.write(ERROR.getBytes());
+						//pw.println(ERROR);
+						//String hexError = DatatypeConverter.printHexBinary(ERROR.getBytes());
+						//pw.println(hexError);
 					}
-					System.out.println("FINALLY");
 				}
 				else {
 					ld = LocalTime.now();
 					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ARCH INEXISTENTE " + NEW_LINE );
-					escribirleAlCliente.write(ERROR.getBytes());
-					String hexError = DatatypeConverter.printHexBinary(ERROR.getBytes());
-					pw.println(hexError);
+					//escribirleAlCliente.write(ERROR.getBytes());
+					//pw.println(ERROR);
+					//String hexError = DatatypeConverter.printHexBinary(ERROR.getBytes());
+					//pw.println(hexError);
 				}
 
 			}
 			else {
 				LocalTime ld = LocalTime.now();
 				fw.write(ld.toString()+"CLIENTE " + codigoUnico + " NO SIGUE EL PROTOCOLO " + NEW_LINE);
-				escribirleAlCliente.write(ERROR.getBytes());
-				String hexError = DatatypeConverter.printHexBinary(ERROR.getBytes());
-				pw.println(hexError);
+				//escribirleAlCliente.write(ERROR.getBytes());
+				//	pw.println(ERROR);
+				//String hexError = DatatypeConverter.printHexBinary(ERROR.getBytes());
+				//pw.println(hexError);
 				//esperar n clientes
 			}
 		}
