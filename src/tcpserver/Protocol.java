@@ -130,6 +130,7 @@ public class Protocol implements Runnable{
 					}
 					
 					bis.close();
+					bis2.close();
 					ld = LocalTime.now();
 					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ENVIADO ARCH " + archivoDeseado.getName() + NEW_LINE);
 					//hashing
