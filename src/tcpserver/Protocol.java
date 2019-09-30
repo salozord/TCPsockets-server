@@ -94,13 +94,12 @@ public class Protocol implements Runnable{
 	public static void procesar(InputStream leerDelCliente , OutputStream escribirleAlCliente, int codigoUnico) throws IOException 
 	{
 		FileWriter fw = new FileWriter(new File("./data/"+codigoUnico+".log" ));
-		String preparado;
 		try 
 		{
 			BufferedReader bf = new BufferedReader(new InputStreamReader(leerDelCliente));
 			PrintWriter pw = new PrintWriter(new OutputStreamWriter(escribirleAlCliente), true);
 			System.out.println("Antecitos");
-			preparado = bf.readLine();
+			String preparado = bf.readLine();
 			if(preparado.equalsIgnoreCase(PREPARADO)) 
 			{
 				LocalDate ld = LocalDate.now();
@@ -135,12 +134,14 @@ public class Protocol implements Runnable{
 					MessageDigest hash = MessageDigest.getInstance("SHA-256");
 					hash.update(bytesEnteros);
 					byte[] fileHashed = hash.digest();
-					byte[] finArch = (FINARCH + SEPARADOR).getBytes() ;
+					
+					String fin = (FINARCH + SEPARADOR) + DatatypeConverter.printHexBinary(fileHashed);
+//					byte[] finArch = (FINARCH + SEPARADOR).getBytes() ;
 
-
-					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-					outputStream.write(finArch);
-					outputStream.write(fileHashed);
+//
+//					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//					outputStream.write(finArch);
+//					outputStream.write(fileHashed);
 					
 
 					ld = LocalDate.now();
@@ -149,8 +150,8 @@ public class Protocol implements Runnable{
 
 					//FINARCH$digest
 					//escribirleAlCliente.write(outputStream.toByteArray());
-					String finarch = DatatypeConverter.printHexBinary(outputStream.toByteArray());
-					pw.write(finarch);
+//					String finarch = DatatypeConverter.printHexBinary(outputStream.toByteArray());
+					pw.write(fin);
 
 					if(bf.readLine().equalsIgnoreCase(RECIBIDO)) {
 						ld = LocalDate.now();
