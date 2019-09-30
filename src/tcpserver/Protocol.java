@@ -192,6 +192,6 @@ public class Protocol extends Thread{
 			e.printStackTrace();
 		}
 
-
+		fw.close();
 	}
 }
