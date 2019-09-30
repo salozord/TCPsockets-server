@@ -2,6 +2,7 @@ package tcpserver;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -21,7 +22,7 @@ public class Protocol implements Runnable{
 	public static final String PREPARADO = "PREPARADO";
 	public static File folder  = new File("./data/");
 	public static final String SEPARADOR = "$";
-	public static final Integer TAMANIO_SEGMENTO = 1024;
+	public static final Integer TAMANIO_SEGMENTO = 8192;
 	public static final String ERROR = "ERROR";
 	public static final String ARCH = "ARCH";
 	public static final String FINARCH = "FINARCH";
@@ -50,7 +51,7 @@ public class Protocol implements Runnable{
 			{
 				if(aceptaArchs == true)
 				{
-					
+
 					procesar(sc.getInputStream(), sc.getOutputStream(), sc.hashCode());
 					break;
 				}
@@ -92,7 +93,7 @@ public class Protocol implements Runnable{
 	 */
 	public static void procesar(InputStream leerDelCliente , OutputStream escribirleAlCliente, int codigoUnico) throws IOException 
 	{
-		FileWriter fw = new FileWriter(new File("./data/logs"+codigoUnico+".log" ));
+		FileWriter fw = new FileWriter(new File("./data/logs/"+codigoUnico+".log" ));
 		try 
 		{
 			BufferedReader bf = new BufferedReader(new InputStreamReader(leerDelCliente));
@@ -117,18 +118,30 @@ public class Protocol implements Runnable{
 					byte[] mybytearray = new byte[TAMANIO_SEGMENTO];
 					BufferedInputStream bis = new BufferedInputStream(new FileInputStream(archivoDeseado));
 					BufferedInputStream bis2 = new BufferedInputStream(new FileInputStream(archivoDeseado));
-
+					DataOutputStream dos =  new DataOutputStream(escribirleAlCliente);
+					
 					byte[] bytesEnteros = new byte[(int)archivoDeseado.length()];
-					int n ;
 					bis2.read(bytesEnteros, 0, (int)archivoDeseado.length());
-					while (( n = bis.read(mybytearray)) != 1) 
+					
+					dos.writeLong(archivoDeseado.length());
+					int n ;
+					long sumaTam = 0;
+					while (sumaTam < archivoDeseado.length() && ( n = bis.read(mybytearray)) != 1) 
 					{
-						escribirleAlCliente.write(mybytearray,0, n);
+//						try
+//						{
+						dos.write(mybytearray,0, n);
+						sumaTam += n;	
+//							dos.flush();
+//						}
+//						catch(Exception e) {
+//							break;
+//						}
 						//String hexy = DatatypeConverter.printHexBinary(mybytearray);
 						//pw.println(hexy);
 						//n++;
 					}
-					
+					//dos.close();
 					bis.close();
 					bis2.close();
 					ld = LocalTime.now();
@@ -138,15 +151,15 @@ public class Protocol implements Runnable{
 					hash.update(bytesEnteros);
 					byte[] fileHashed = hash.digest();
 					//byte[] finA = (FINARCH + SEPARADOR).getBytes();
-					
-					String fin = (FINARCH + SEPARADOR)+ DatatypeConverter.printHexBinary(fileHashed);
-//					byte[] finArch = (FINARCH + SEPARADOR).getBytes() ;
 
-//
-//					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//					outputStream.write(finArch);
-//					outputStream.write(fileHashed);
-					
+					String fin = (FINARCH + SEPARADOR)+ DatatypeConverter.printHexBinary(fileHashed);
+					//					byte[] finArch = (FINARCH + SEPARADOR).getBytes() ;
+
+					//
+					//					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+					//					outputStream.write(finArch);
+					//					outputStream.write(fileHashed);
+
 
 					ld = LocalTime.now();
 					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ENVIADO HASH DEL ARCH " + archivoDeseado.getName() + NEW_LINE);
@@ -154,18 +167,21 @@ public class Protocol implements Runnable{
 
 					//FINARCH$digest
 					//escribirleAlCliente.write(outputStream.toByteArray());
-//					String finarch = DatatypeConverter.printHexBinary(outputStream.toByteArray());
+					//					String finarch = DatatypeConverter.printHexBinary(outputStream.toByteArray());
 					pw.println(fin);
 
 					if(bf.readLine().equalsIgnoreCase(RECIBIDO)) {
 						ld = LocalTime.now();
 						fw.write(ld.toString()+"CLIENTE " + codigoUnico + " FIN CONEXION " + archivoDeseado.getName() + NEW_LINE );
+						fw.close();
 
 						bf.close(); 
 					}
 					else {
 						ld = LocalTime.now();
 						fw.write(ld.toString()+"CLIENTE " + codigoUnico + " NO LOGRO VERIFICAR INTEGRIDAD  " + archivoDeseado.getName() + NEW_LINE);
+						fw.close();
+
 						//escribirleAlCliente.write(ERROR.getBytes());
 						//pw.println(ERROR);
 						//String hexError = DatatypeConverter.printHexBinary(ERROR.getBytes());
@@ -175,6 +191,8 @@ public class Protocol implements Runnable{
 				else {
 					ld = LocalTime.now();
 					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ARCH INEXISTENTE " + NEW_LINE );
+					fw.close();
+
 					//escribirleAlCliente.write(ERROR.getBytes());
 					//pw.println(ERROR);
 					//String hexError = DatatypeConverter.printHexBinary(ERROR.getBytes());
@@ -185,6 +203,8 @@ public class Protocol implements Runnable{
 			else {
 				LocalTime ld = LocalTime.now();
 				fw.write(ld.toString()+"CLIENTE " + codigoUnico + " NO SIGUE EL PROTOCOLO " + NEW_LINE);
+				fw.close();
+
 				//escribirleAlCliente.write(ERROR.getBytes());
 				//	pw.println(ERROR);
 				//String hexError = DatatypeConverter.printHexBinary(ERROR.getBytes());
@@ -202,6 +222,5 @@ public class Protocol implements Runnable{
 			e.printStackTrace();
 		}
 
-		fw.close();
 	}
 }
