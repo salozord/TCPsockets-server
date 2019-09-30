@@ -92,7 +92,7 @@ public class Protocol implements Runnable{
 	 */
 	public static void procesar(InputStream leerDelCliente , OutputStream escribirleAlCliente, int codigoUnico) throws IOException 
 	{
-		FileWriter fw = new FileWriter(new File("./data/"+codigoUnico+".log" ));
+		FileWriter fw = new FileWriter(new File("./data/logs"+codigoUnico+".log" ));
 		try 
 		{
 			BufferedReader bf = new BufferedReader(new InputStreamReader(leerDelCliente));
