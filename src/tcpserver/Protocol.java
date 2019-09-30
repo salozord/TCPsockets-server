@@ -116,8 +116,11 @@ public class Protocol implements Runnable{
 
 					byte[] mybytearray = new byte[TAMANIO_SEGMENTO];
 					BufferedInputStream bis = new BufferedInputStream(new FileInputStream(archivoDeseado));
+					BufferedInputStream bis2 = new BufferedInputStream(new FileInputStream(archivoDeseado));
+
 					byte[] bytesEnteros = new byte[(int)archivoDeseado.length()];
 					int n ;
+					bis2.read(bytesEnteros, 0, (int)archivoDeseado.length());
 					while (( n = bis.read(mybytearray)) != 1) 
 					{
 						escribirleAlCliente.write(mybytearray,0, n);
