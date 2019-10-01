@@ -201,6 +201,12 @@ public class PoolThreads
 			numeroSesiones--;
 		}
 	}
+	
+	public synchronized void notificar() {
+		if(numeroSesiones > 25) {
+			notify();
+		}
+	}
 
 	public static void main(String ... args){
 		try {

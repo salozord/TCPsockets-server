@@ -78,7 +78,8 @@ public class Protocol implements Runnable{
 				}
 				pool.finSesion();
 				sc.close();
-				pool.notify();
+//				pool.notify();
+				pool.notificar();
 			} 
 			catch (IOException e) {
 				// TODO Auto-generated catch block
