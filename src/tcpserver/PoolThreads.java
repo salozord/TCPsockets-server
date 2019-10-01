@@ -101,7 +101,7 @@ public class PoolThreads
 					numeroSesiones++;
 //					boolean aceptaArchs = false;
 //					seAceptan(aceptaArchs);
-					boolean aceptaArchs = seAceptan();
+					boolean aceptaArchs = seAceptan(true);
 					executor.execute(new Protocol(sc, aceptaArchs, tiempoMuerte, archivo, this));
 				}
 				else
@@ -144,7 +144,7 @@ public class PoolThreads
 //			}
 //		}
 //	}
-	public boolean seAceptan()
+	public boolean seAceptan(boolean primeraVez)
 	{
 		boolean aceptan = false;
 		synchronized (nThreadsActivos) 
@@ -154,15 +154,27 @@ public class PoolThreads
 				if(iniciaConcurrencia == false)
 				{
 					iniciaConcurrencia = true;
-					nThreadsActivos++;
-					aceptan = true;
+					//nThreadsActivos++;
+					//aceptan = true;
 				}
 				else
 				{
-					if(nThreadsActivos < nThreads)
+					if(primeraVez) 
+					{
+						
+						if(nThreadsActivos < nThreads)
+						{
+							nThreadsActivos++;
+						}
+						
+					}
+					if(nThreads == nThreadsActivos && nThreads ==  numeroSesiones)
 					{
 						aceptan = true;
-						nThreadsActivos++;
+					}
+					else if(numeroSesiones > nThreads ) 
+					{
+						aceptan = false;
 					}
 //					ESTO SOBRA SI ES ASÍ CON RETURN
 //					else
