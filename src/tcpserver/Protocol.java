@@ -147,6 +147,7 @@ public class Protocol implements Runnable{
 						//pw.println(hexy);
 						//n++;
 					}
+					//dos.flush();
 					//dos.close();
 					bis.close();
 					//bis2.close();
@@ -170,7 +171,7 @@ public class Protocol implements Runnable{
 					ld = LocalTime.now();
 					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ENVIADO HASH DEL ARCH " + archivoDeseado.getName() + NEW_LINE);
 
-
+					String rec = bf.readLine();
 					//FINARCH$digest
 					//escribirleAlCliente.write(outputStream.toByteArray());
 					//					String finarch = DatatypeConverter.printHexBinary(outputStream.toByteArray());
