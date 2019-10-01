@@ -119,11 +119,12 @@ public class Protocol implements Runnable{
 
 					byte[] mybytearray = new byte[TAMANIO_SEGMENTO];
 					BufferedInputStream bis = new BufferedInputStream(new FileInputStream(archivoDeseado));
-					BufferedInputStream bis2 = new BufferedInputStream(new FileInputStream(archivoDeseado));
+					//BufferedInputStream bis2 = new BufferedInputStream(new FileInputStream(archivoDeseado));
 					DataOutputStream dos =  new DataOutputStream(escribirleAlCliente);
 					
-					byte[] bytesEnteros = new byte[(int)archivoDeseado.length()];
-					bis2.read(bytesEnteros, 0, (int)archivoDeseado.length());
+					//byte[] bytesEnteros = new byte[(int)archivoDeseado.length()];
+					//bis2.read(bytesEnteros, 0, (int)archivoDeseado.length());
+					MessageDigest hash = MessageDigest.getInstance("SHA-256");
 					
 					dos.writeLong(archivoDeseado.length());
 					dos.flush();
@@ -134,8 +135,9 @@ public class Protocol implements Runnable{
 //						try
 //						{
 						dos.write(mybytearray,0, n);
+						hash.update(mybytearray, 0, n);
 						dos.flush();
-						sumaTam += n;	
+						sumaTam += n;
 //							dos.flush();
 //						}
 //						catch(Exception e) {
@@ -147,12 +149,12 @@ public class Protocol implements Runnable{
 					}
 					//dos.close();
 					bis.close();
-					bis2.close();
+					//bis2.close();
 					ld = LocalTime.now();
 					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ENVIADO ARCH " + archivoDeseado.getName() + NEW_LINE);
 					//hashing
-					MessageDigest hash = MessageDigest.getInstance("SHA-256");
-					hash.update(bytesEnteros);
+//					MessageDigest hash = MessageDigest.getInstance("SHA-256");
+//					hash.update(bytesEnteros);
 					byte[] fileHashed = hash.digest();
 					//byte[] finA = (FINARCH + SEPARADOR).getBytes();
 
