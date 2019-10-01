@@ -122,7 +122,6 @@ public class Protocol implements Runnable{
 					ld = LocalTime.now();
 					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ARCH " + archivoDeseado.getName() + NEW_LINE );
 					header += archivoDeseado.getName();
-					//String headerHex = DatatypeConverter.printHexBinary(header.getBytes());
 					pw.println(header);
 
 					byte[] mybytearray;
@@ -153,12 +152,11 @@ public class Protocol implements Runnable{
 						dos.flush();
 						sumaTam += n;
 					}
+
 					bis.close();
 					ld = LocalTime.now();
 					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ENVIADO ARCH " + archivoDeseado.getName() + NEW_LINE);
 					//hashing
-					//					MessageDigest hash = MessageDigest.getInstance("SHA-256");
-					//					hash.update(bytesEnteros);
 					byte[] fileHashed = hash.digest();
 
 					String fin = (FINARCH + SEPARADOR)+ DatatypeConverter.printHexBinary(fileHashed);
@@ -167,7 +165,7 @@ public class Protocol implements Runnable{
 					ld = LocalTime.now();
 					fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ENVIADO HASH DEL ARCH " + archivoDeseado.getName() + NEW_LINE);
 
-
+					String rec = bf.readLine();
 					//FINARCH$digest
 					//escribirleAlCliente.write(outputStream.toByteArray());
 					//					String finarch = DatatypeConverter.printHexBinary(outputStream.toByteArray());
@@ -201,12 +199,6 @@ public class Protocol implements Runnable{
 				LocalTime ld = LocalTime.now();
 				fw.write(ld.toString()+"CLIENTE " + codigoUnico + " NO SIGUE EL PROTOCOLO " + NEW_LINE);
 				fw.close();
-
-				//escribirleAlCliente.write(ERROR.getBytes());
-				//	pw.println(ERROR);
-				//String hexError = DatatypeConverter.printHexBinary(ERROR.getBytes());
-				//pw.println(hexError);
-				//esperar n clientes
 			}
 		}
 		catch (IOException e) {
@@ -217,8 +209,8 @@ public class Protocol implements Runnable{
 			LocalTime ld = LocalTime.now();
 			fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ERROR " + e.getMessage() + NEW_LINE );
 			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+		} catch (InterruptedException e) 
+		{
 			e.printStackTrace();
 		}
 
