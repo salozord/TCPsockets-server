@@ -59,7 +59,8 @@ public class Protocol implements Runnable{
 				{
 					//Duerme 5 segundos antes de validar si ya puede descargar el archivo
 					Thread.sleep(5000);
-					aceptaArchs = pool.seAceptan(aceptaArchs);
+//					this.aceptaArchs = pool.seAceptan(aceptaArchs);
+					this.aceptaArchs = pool.seAceptan();
 				}
 			}
 		} 

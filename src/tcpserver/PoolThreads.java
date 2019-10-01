@@ -99,8 +99,9 @@ public class PoolThreads
 				{
 					Socket sc = ss.accept();
 					numeroSesiones++;
-					boolean aceptaArchs = false;
-					seAceptan(aceptaArchs);
+//					boolean aceptaArchs = false;
+//					seAceptan(aceptaArchs);
+					boolean aceptaArchs = seAceptan();
 					executor.execute(new Protocol(sc, aceptaArchs, tiempoMuerte, archivo, this));
 				}
 				else
@@ -115,8 +116,37 @@ public class PoolThreads
 		}
 	}
 	
-	public boolean seAceptan(boolean aceptan)
+//	public boolean seAceptan(boolean aceptan)
+//	{
+//		synchronized (nThreadsActivos) 
+//		{
+//			synchronized (iniciaConcurrencia) 
+//			{
+//				if(iniciaConcurrencia == false)
+//				{
+//					iniciaConcurrencia = true;
+//					nThreadsActivos++;
+//					aceptan = true;
+//				}
+//				else
+//				{
+//					if(nThreadsActivos < nThreads)
+//					{
+//						aceptan = true;
+//						nThreadsActivos++;
+//					}
+//					else
+//					{
+//						aceptan = false;
+//					}
+//				}
+//				return aceptan;
+//			}
+//		}
+//	}
+	public boolean seAceptan()
 	{
+		boolean aceptan = false;
 		synchronized (nThreadsActivos) 
 		{
 			synchronized (iniciaConcurrencia) 
@@ -134,10 +164,11 @@ public class PoolThreads
 						aceptan = true;
 						nThreadsActivos++;
 					}
-					else
-					{
-						aceptan = false;
-					}
+//					ESTO SOBRA SI ES ASÍ CON RETURN
+//					else
+//					{
+//						aceptan = false;
+//					}
 				}
 				return aceptan;
 			}
