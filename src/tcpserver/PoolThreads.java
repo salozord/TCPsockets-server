@@ -101,8 +101,7 @@ public class PoolThreads
 					numeroSesiones++;
 					boolean aceptaArchs = false;
 					seAceptan(aceptaArchs);
-					Protocol p = new Protocol(sc, aceptaArchs, tiempoMuerte, archivo, this);
-					executor.execute(p);
+					executor.execute(new Protocol(sc, aceptaArchs, tiempoMuerte, archivo, this));
 				}
 				else
 				{

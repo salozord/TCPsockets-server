@@ -76,8 +76,8 @@ public class Protocol implements Runnable{
 					pool.finSesionArchivos();
 				}
 				pool.finSesion();
-				pool.notify();
 				sc.close();
+				pool.notify();
 			} 
 			catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -124,6 +124,7 @@ public class Protocol implements Runnable{
 					bis2.read(bytesEnteros, 0, (int)archivoDeseado.length());
 					
 					dos.writeLong(archivoDeseado.length());
+					dos.flush();
 					int n ;
 					long sumaTam = 0;
 					while (sumaTam < archivoDeseado.length() && ( n = bis.read(mybytearray)) != 1) 
@@ -131,6 +132,7 @@ public class Protocol implements Runnable{
 //						try
 //						{
 						dos.write(mybytearray,0, n);
+						dos.flush();
 						sumaTam += n;	
 //							dos.flush();
 //						}
