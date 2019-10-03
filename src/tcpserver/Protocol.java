@@ -31,14 +31,14 @@ public class Protocol implements Runnable{
 	private Socket sc;
 	private boolean aceptaArchs;
 	private int tiempoMuerte;
-	private static File archivo;
+	private File archivo;
 	private PoolThreads pool;
 
-	public Protocol(Socket sc, boolean aceptaArchs, int tiempoMuerte, File archivo, PoolThreads pool) {
+	public Protocol(Socket sc, boolean aceptaArchs, int tiempoMuerte, String archivo, PoolThreads pool) {
 		this.sc = sc;
 		this.aceptaArchs = aceptaArchs;
 		this.tiempoMuerte = tiempoMuerte;
-		Protocol.archivo = archivo;
+		this.archivo = new File(archivo);
 		this.pool = pool;
 	}
 
@@ -113,7 +113,7 @@ public class Protocol implements Runnable{
 			{
 				LocalTime ld = LocalTime.now();
 				fw.write(ld.toString()+"NUEVO CLIENTE " + codigoUnico + NEW_LINE );
-				File archivoDeseado = Protocol.archivo;
+				File archivoDeseado = archivo;
 				if(archivoDeseado != null) 
 				{
 
@@ -130,18 +130,18 @@ public class Protocol implements Runnable{
 					MessageDigest hash;
 
 
-					synchronized (archivo) 
-					{
-						mybytearray = new byte[TAMANIO_SEGMENTO];
-						bis = new BufferedInputStream(new FileInputStream(archivoDeseado));
-						dos =  new DataOutputStream(escribirleAlCliente);
-						hash = MessageDigest.getInstance("SHA-256");
-						System.out.println("Longi " + archivoDeseado.length());
-						dos.writeLong(archivoDeseado.length());
-						dos.flush();
-						
-						Thread.sleep(1000);
-					}
+//					synchronized (archivo) 
+//					{
+					mybytearray = new byte[TAMANIO_SEGMENTO];
+					bis = new BufferedInputStream(new FileInputStream(archivoDeseado));
+					dos =  new DataOutputStream(escribirleAlCliente);
+					hash = MessageDigest.getInstance("SHA-256");
+					System.out.println("Longi " + archivoDeseado.length());
+					dos.writeLong(archivoDeseado.length());
+					dos.flush();
+					
+					Thread.sleep(1000); // NO SE SI ESTO SE DEJARÍA CON EL CAMBIO, CREERÍA QUE NO
+//					}
 
 					int n ;
 					long sumaTam = 0;

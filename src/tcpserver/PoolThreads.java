@@ -7,11 +7,11 @@ import java.util.concurrent.Executors;
 
 public class PoolThreads 
 {
-	private static ServerSocket ss;
+	private ServerSocket ss;
 	private static int nThreads;
 	private static Integer nThreadsActivos = 0;
 	private static int tiempoMuerte = 0;
-	private static File archivo;
+	private String archivo;
 	private static Integer numeroSesiones=0;
 	private static Boolean iniciaConcurrencia;
 
@@ -45,7 +45,7 @@ public class PoolThreads
 				System.out.println("Archivo incorrecto");
 				continue;
 			}
-			archivo = directorio.listFiles()[arch-1];
+			archivo = directorio.listFiles()[arch-1].getPath();
 			break;
 		}
 		while(true)
