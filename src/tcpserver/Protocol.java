@@ -140,7 +140,7 @@ public class Protocol implements Runnable{
 					dos.writeLong(archivoDeseado.length());
 					dos.flush();
 					
-					Thread.sleep(1000); // NO SE SI ESTO SE DEJARÍA CON EL CAMBIO, CREERÍA QUE NO
+//					Thread.sleep(1000); // NO SE SI ESTO SE DEJARÍA CON EL CAMBIO, CREERÍA QUE NO
 //					}
 
 					int n ;
@@ -201,18 +201,11 @@ public class Protocol implements Runnable{
 				fw.close();
 			}
 		}
-		catch (IOException e) {
+		catch (Exception e) {
 			LocalTime ld = LocalTime.now();
 			fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ERROR " + e.getMessage() + NEW_LINE );
+			fw.close();
 			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			LocalTime ld = LocalTime.now();
-			fw.write(ld.toString()+"CLIENTE " + codigoUnico + " ERROR " + e.getMessage() + NEW_LINE );
-			e.printStackTrace();
-		} catch (InterruptedException e) 
-		{
-			e.printStackTrace();
-		}
-
+		} 
 	}
 }
