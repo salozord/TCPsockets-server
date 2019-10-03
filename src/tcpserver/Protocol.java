@@ -27,6 +27,7 @@ public class Protocol implements Runnable{
 	public static final String ARCH = "ARCH";
 	public static final String FINARCH = "FINARCH";
 	public static final String RECIBIDO = "RECIBIDO";
+	public static final String LLEGO = "LLEGO";
 	public static final String NEW_LINE = "\n";
 	private Socket sc;
 	private boolean aceptaArchs;
@@ -46,7 +47,7 @@ public class Protocol implements Runnable{
 	{
 		try 
 		{
-			//sc.setSoTimeout(1000*tiempoMuerte);
+			sc.setSoTimeout(1000*tiempoMuerte);
 			int i = 0;
 			while(true)
 			{
@@ -150,6 +151,7 @@ public class Protocol implements Runnable{
 						dos.write(mybytearray,0, n);
 						hash.update(mybytearray, 0, n);
 						dos.flush();
+						bf.readLine().equalsIgnoreCase(LLEGO);
 						sumaTam += n;
 					}
 
